@@ -1,0 +1,368 @@
+[
+    {
+        "sourceField": "MED_REC_M_ID",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "ID",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "MED_REC_M_ID",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "PATIENT_ID",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "ORG_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "ORG_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "ORG_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "ORG_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "PAT_EMPI",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "CERT_TYPE_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "ID_TYPE_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "ID_TYPE_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "CERT_NUM",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "IDCARD",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "HCARD_NUMBER",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "CARD_NUM",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "CARD_TYPE_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "CARD_TYPE_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "PAT_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "PATIENT_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "SEX_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "SEX_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "PAT_SEX_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "SEX_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "BIRTH_DATE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "BIRTH_DT",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "OCPTION_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "OCCUPATION_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "OCPTION_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "OCCUPATION_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "NATIONAL_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "COUNTRY_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "NATIONAL",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "COUNTRY_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "NATION_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "NATIONALITY_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "NATION_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "NATIONALITY_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "EDUCATION_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "EDUCATION_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "MARRIAGE_STATUS_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "MARRIAGE_STATUS_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "MARRIAGE_STATUS_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "MARRIAGE_STATUS_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_TEL",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "PATIENT_TEL",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "REGENCE_DETAIL_ADDR",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "HOUSEHOLD_ADDRESS",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_DETAIL_ADDR",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "CURRENT_ADDRESS",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_PROVINCE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_PROVINCE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "ADMT_DIVIS_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "DISTRICT_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_PROVINCE_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_PROVINCE_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_CITY",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_CITY",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_CITY_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_CITY_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_TOWN",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_COUNTY",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_TOWN_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_COUNTY_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_TOWN",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_TOWN",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_TOWN_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "ADDRESS_TOWN_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "ADDRESS_VILLAGE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "ADDRESS_VILLAGE_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "ADDRESS_HN",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "EMAIL",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "WORK_ORG_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "WORKUNIT",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "WORK_ORG_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LIVENOW_ADDR_POSTCODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "POSTAL_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "NATPLACE_CITY_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "NATIVE_ADDRESS_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "NATPLACE_CITY",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "NATIVE_ADDRESS_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LINKMAN_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "LINKMAN_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LINKMAN_RELASHIP_CODE",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "LINKMAN_RELATION_CODE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LINKMAN_RELASHIP_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "LINKMAN_RELATION_NAME",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LINKMAN_DETAIL_ADDR",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "LINKMAN_ADDRESS",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "LINKMAN_TEL",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_basic",
+        "targetField": "LINKMAN_TEL",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "PATIENT_INFO_SOURCE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "REMARK",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "SECURITY_LEVEL",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "CREATE_TIME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "CREATE_DT",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "UPDATE_TIME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "UPDATE_DT",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "INVALID_FLAG",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "RECORD_STATUS",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "CREATOR_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "DATA_CREATOR",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": "UPDATE_USER_NAME",
+        "sourceTable": "dwd_sv_is_inhos_med_rec_m",
+        "targetField": "DATA_UPDATOR",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "DATA_BATCH_MACHINE",
+        "targetTable": "EMR_PATIENT"
+    },
+    {
+        "sourceField": null,
+        "sourceTable": null,
+        "targetField": "DATA_BATCH_WAY",
+        "targetTable": "EMR_PATIENT"
+    }
+]

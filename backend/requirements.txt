@@ -1,0 +1,8 @@
+Flask==2.0.3
+Flask-CORS
+Werkzeug==2.0.3
+pandas
+openai
+
+
+

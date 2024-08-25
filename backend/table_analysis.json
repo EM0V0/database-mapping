@@ -1,0 +1,12 @@
+{
+    "union": [
+        "json",
+        "related_source_tables",
+        "dwd_sv_is_inhos_med_rec_m",
+        "dwd_sv_is_inhos_med_rec_diagnos",
+        "dwd_sv_is_inhos_med_rec_consult",
+        "dwd_sv_is_inhos_med_rec_charge",
+        "dwd_sv_is_inhos_med_rec_basic",
+        "dwd_sv_is_inhos_med_rec_auto"
+    ]
+}
