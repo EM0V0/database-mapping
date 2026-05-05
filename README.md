@@ -1,327 +1,149 @@
-## 项目文档
+# Database Mapping Workbench
 
-### 项目概述
+Modernized demo that pairs a Vue 3 interface with a Flask service to visually map columns between heterogeneous sources and a canonical target definition. OpenAI-compatible models recommend sheet coverage, align fields, and draft SQL you can review before running any migration.
 
-**项目名称**：Database Mapping Tool (demo)
+## Highlights
 
-**项目简介**：数据库映射工具项目旨在简化数据迁移过程，特别是在多个来源数据库之间进行数据整合和转换时。该项目通过前后端分离的架构实现，前端基于
-Vue.js 框架，后端使用 Flask 框架，在前端提供完整的映射创建与可视化功能，并结合 OpenAI API 提供智能字段映射和 SQL
-生成功能。用户可以上传源数据表和目标数据表，系统会自动分析和推荐字段映射关系，并生成相应的
-SQL 语句以便于数据迁移。
+- **Guided AI flows** with English prompts, strict JSON parsing, and Markdown fence stripping for safer automation.
+- **RESTful Flask API** with health checks, structured error JSON, and temporary upload handling (no `subprocess` orchestration).
+- **Developer-friendly Vue layer** that targets same-origin `/api/*` routes (with a fixed webpack dev proxy) or an optional `VUE_APP_API_ORIGIN` override.
+- **Environment-driven secrets** via `python-dotenv` — no more empty API keys committed in code.
 
-### 技术栈
-
-- **前端**：
-    - Vue.js：用于构建用户界面
-    - D3.js：用于绘制映射线条
-- **后端**：
-    - Flask：用于处理 API 请求
-    - Pandas：用于处理 Excel 数据
-    - OpenAI API：用于生成字段映射和 SQL 语句
-
-### 目录结构
+## Architecture
 
 ```
 project-root/
 ├── src/
-│   ├── components/
-│   │   ├── MappingTool.vue
-│   │   ├── SourceTableUpload.vue
-│   │   ├── TargetTableUpload.vue
-│   │   └── TableComponent.vue
-│   └── ...
+│   ├── api/client.js            # fetch helpers + env-aware base URLs
+│   └── components/
+│       ├── MappingTool.vue
+│       ├── SourceTableUpload.vue
+│       ├── TargetTableUpload.vue
+│       └── TableComponent.vue
 ├── backend/
-│   ├── app.py
-│   ├── workflow.py
-│   ├── workflow2.py
-│   ├── workflow3.py
-│   └── requirements.txt
-└── ...
+│   ├── app.py                   # Flask entrypoint
+│   ├── ai_pipeline.py           # OpenAI orchestration + parsing utilities
+│   ├── config.py                # Environment configuration
+│   ├── validators.py            # Structural schema + identifier guards
+│   ├── tests/                   # pytest safety net (runs in CI without OpenAI egress)
+│   ├── requirements.txt
+│   └── .env.example
+├── package.json
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+└── vue.config.js
 ```
 
-### 功能概述
-
-#### 前端组件
-
-1. **MappingTool.vue**
-    - **功能**：作为主要界面组件，负责显示源表和目标表的上传、字段映射、SQL 生成等功能。
-    - **实现细节**：
-        - **源表上传**：使用 `SourceTableUpload` 组件实现源表数据的上传，解析上传的文件并将数据传递给父组件。
-        - **目标表上传**：使用 `TargetTableUpload` 组件实现目标表数据的上传，解析上传的文件并将数据传递给父组件。
-        - **表格展示**：使用 `TableComponent` 组件展示源表和目标表的字段，支持字段的拖拽操作。
-        - **字段拖拽映射**：实现字段的拖拽映射功能，通过监听拖拽事件，实现字段之间的映射关系管理。
-        - **映射线条绘制**：使用 D3.js 绘制源字段和目标字段之间的映射线条，直观展示映射关系。
-        - **字段映射管理**：提供添加、删除、导入、导出字段映射的功能，方便用户管理映射关系。
-        - **SQL 生成**：调用后端 API，根据字段映射关系生成 SQL 语句，并在前端展示生成的 SQL。
-
-2. **SourceTableUpload.vue**
-    - **功能**：实现源数据表文件的上传和解析。
-    - **实现细节**：
-        - **文件选择**：提供文件选择按钮，允许用户选择 Excel 或 JSON 格式的源数据表文件。
-        - **文件解析**：使用 FileReader 解析上传的文件，提取表格数据并展示。
-        - **文件存储**：将解析后的文件存储在本地状态中，支持选择已上传的文件进行解析。
-        - **表格选择**：展示解析后的表格列表，允许用户选择需要上传的表格。
-        - **事件传递**：通过事件将解析后的表格数据传递给父组件，以便进行后续的处理和展示。
-
-3. **TargetTableUpload.vue**
-    - **功能**：实现目标数据表文件的上传和解析。
-    - **实现细节**：
-        - **文件选择**：提供文件选择按钮，允许用户选择 JSON 格式的目标数据表文件。
-        - **文件解析**：使用 FileReader 解析上传的文件，提取表格数据并展示。
-        - **文件存储**：将解析后的文件存储在本地状态中，支持选择已上传的文件进行解析。
-        - **表格选择**：展示解析后的表格列表，允许用户选择需要上传的表格。
-        - **事件传递**：通过事件将解析后的表格数据传递给父组件，以便进行后续的处理和展示。
-
-4. **TableComponent.vue**
-    - **功能**：展示单个表格及其字段，支持字段拖拽操作。
-    - **实现细节**：
-        - **字段展示**：展示表格的字段列表，支持搜索和过滤字段。
-        - **字段拖拽**：实现字段拖拽功能，允许用户将字段从源表拖拽到目标表，建立映射关系。
-        - **拖拽事件**：监听字段拖拽和放置事件，通过事件传递将拖拽操作传递给父组件。
-        - **字段双击**：实现字段的双击事件，允许用户快速选择和高亮字段。
-        - **字段映射高亮**：根据映射关系高亮已映射的字段，提供直观的映射关系展示。
-
-#### 后端服务
-
-1. **app.py**
-    - **功能**：Flask 应用的主入口，处理前端请求。
-    - **实现细节**：
-        - **文件上传**：提供上传源表和目标表的 API 接口，处理前端上传的文件并保存到服务器。
-        - **推荐源表**：调用 `workflow.py` 脚本，分析上传的源表和目标表数据，推荐相关的源表。
-        - **推荐字段映射**：调用 `workflow2.py` 脚本，生成源表和目标表的字段映射关系。
-        - **生成 SQL**：调用 `workflow3.py` 脚本，根据字段映射关系生成 SQL 语句，并返回给前端。
-
-2. **workflow.py**
-    - **功能**：处理源表和目标表的数据分析，推荐相关的源表。
-    - **实现细节**：
-        - **数据读取**：使用 Pandas 读取上传的 Excel 文件，提取表格数据。
-        - **数据分析**：使用 OpenAI API 分析表格数据，根据目标表结构推荐相关的源表。
-        - **结果保存**：将分析结果保存为 JSON 文件，供后续步骤使用。
-
-3. **workflow2.py**
-    - **功能**：生成字段映射关系。
-    - **实现细节**：
-        - **数据读取**：读取上传的源表和目标表 JSON 文件，提取表格字段数据。
-        - **字段映射生成**：使用 OpenAI API 分析源表和目标表的字段数据，生成字段映射关系。
-        - **结果保存**：将字段映射关系保存为 JSON 文件，供后续步骤使用。
-
-4. **workflow3.py**
-    - **功能**：生成 SQL 语句。
-    - **实现细节**：
-        - **字段映射读取**：读取字段映射关系 JSON 文件，提取映射数据。
-        - **SQL 生成**：使用 OpenAI API 根据字段映射关系生成 SQL 语句。
-        - **结果保存**：将生成的 SQL 语句保存为文本文件，返回给前端。
-
-### 安装和部署
-
-#### 前端
-
-1. **安装依赖**：
-   ```bash
-   pip install npm
-   ```
-2. **启动开发服务器**：
-   ```bash
-   npm run serve
-   ```
-
-#### 后端
+## Prerequisites
 
-1. **安装依赖**：
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. **启动 Flask 应用**：
-   ```bash
-   python app.py
-   ```
+- Node.js 18+ and npm 9+
+- Python 3.10+ (**align `python -m pip` with the interpreter you run** — Windows often exposes multiple interpreters)
+- An OpenAI API key (or any OpenAI-compatible endpoint that supports `chat.completions`)
 
-### 详细功能实现
+## Backend setup
 
-#### MappingTool.vue
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+# Optional: only needed to run pytest locally or match CI.
+python -m pip install -r requirements-dev.txt
+copy .env.example .env
+notepad .env   # add OPENAI_API_KEY (and optional OPENAI_BASE_URL / OPENAI_MODEL)
+python app.py
+```
 
-**功能描述**：
+The API listens on `http://127.0.0.1:5000`. Quick smoke test:
 
-- 作为主要界面组件，提供了数据表上传、字段映射、映射线条绘制、映射关系管理和 SQL 生成等功能。
+```powershell
+curl http://127.0.0.1:5000/api/health
+```
 
-**详细实现**：
+### Environment variables
 
-- **数据表上传**：
-    - 集成 `SourceTableUpload` 和 `TargetTableUpload` 组件，实现源表和目标表的上传功能。
-    - 监听子组件的 `tableAdded` 和 `targetTableSelected` 事件，将解析后的表格数据存储在父组件的状态中。
+| Name | Required | Description |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | Yes | Secret used by the OpenAI Python client. |
+| `OPENAI_BASE_URL` | No | Custom base URL for OpenAI-compatible gateways. |
+| `OPENAI_MODEL` | No | Defaults to `gpt-4o`. Pick a model that fits your provider. |
+| `MAX_UPLOAD_MB` | No | Flask `MAX_CONTENT_LENGTH` safeguard (defaults to 25 MB). |
+| `MAX_LLM_PROMPT_CHARS` | No | Clamp for serialized payloads posted to GPT-style APIs. |
+| `LLM_REPAIR_ATTEMPTS` | No | Retry rounds after programmatic validation failure (maps, sheets, SQL). Default `2`, capped at 8. |
+| `LLM_TEMP_STRUCTURE` | No | Temperature for JSON-heavy steps (sheet list, mappings). Default `0.12`. |
+| `LLM_TEMP_SQL` | No | Temperature for SQL drafting. Default `0.22`. |
+| `CORS_ALLOWED_ORIGINS` | No | CSV allowlist (`http(s)://host:port`). Empty → localhost dev presets. Literal `*` is sandbox-only. |
 
-- **表格展示**：
-    - 使用 `TableComponent` 组件分别展示源表和目标表的字段列表。
-    - 通过计算属性和搜索框实现字段的过滤展示。
+## Frontend setup
 
-- **字段拖拽映射**：
-    - 监听 `TableComponent` 组件的 `fieldDragged` 和 `fieldDropped` 事件，管理字段拖拽和映射关系。
-    - 实现字段拖拽时的视觉效果和高亮显示。
+```powershell
+cd ..
+npm install
+npm run serve
+```
 
-- **映射线条绘制**：
-    - 使用 D3.js 绘制源字段和目标字段之间的映射线条，动态更新映射线条的位置和样式。
+By default the dev server proxies `/api/*` to Flask, so you can keep `VUE_APP_API_ORIGIN` unset. If you host the UI separately, create `.env.development.local`:
 
-- **映射关系管理**：
-    - 提供添加、删除、导入、导出字段映射的功能，方便用户管理映射关系。
-    - 监听按钮点击事件，实现字段映射关系的导入导出功能。
+```
+VUE_APP_API_ORIGIN=http://127.0.0.1:5000
+```
 
-- **SQL 生成**：
-    - 调用后端 API，根据字段映射关系生成 SQL 语句，并在前端展示生成的 SQL。
+## REST surface
 
-#### SourceTableUpload.vue
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/health` | Liveness probe for orchestrators. |
+| `POST` | `/api/recommend` | Multipart `source_file` (`.xlsx`) + `target_file` (JSON table) → ranked sheet names. |
+| `POST` | `/api/recommend_fields` | Multipart JSON arrays describing every loaded source table + selected target table → mapping rows. |
+| `POST` | `/api/generate_sql` | JSON body mirroring the UI (`fieldMappings`) → generated SQL string. |
 
-**功能描述**：
+## Working with the UI
 
-- 实现
+1. Import a target definition (`TargetTableUpload`) as JSON: `[{ "name": "...", "fields": [{ "name": "...", "comment": "..." }] }]`.
+2. Import an Excel workbook (`SourceTableUpload`). First row = column names, optional second row = human comments.
+3. Select tables on both sides, drag fields to connect them, and iterate with **Recommend Field Mappings** / **Generate SQL**.
+4. Export/import mapping JSON for collaboration.
 
-源数据表文件的上传和解析功能。
+## Automated verification
 
-**详细实现**：
+```powershell
+cd backend
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python -m pytest tests -q
 
-- **文件选择**：
-    - 提供文件选择按钮，允许用户选择 Excel 或 JSON 格式的源数据表文件。
-    - 监听文件选择事件，获取用户选择的文件。
+cd ..
+npm ci
+npm run lint
+npm run build
+```
 
-- **文件解析**：
-    - 使用 FileReader 解析上传的文件，提取表格数据。
-    - 支持 Excel 文件和 JSON 文件的解析，分别处理不同格式的文件内容。
+GitHub Actions (`.github/workflows/ci.yml`) runs the same toolchain on pushes/PRs: pytest, ESLint, production bundle, advisory `pip-audit`/`npm audit` steps (warnings are surfaced but do not permanently block merges while legacy Vue CLI transitive issues remain).
 
-- **文件存储**：
-    - 将解析后的文件存储在本地状态中，支持选择已上传的文件进行解析。
-    - 提供文件列表展示，允许用户选择和重新解析已上传的文件。
+Consult `SECURITY.md` for residual enterprise obligations (IAM, KMS, PHI handling, SSE, etc.). This repository deliberately stops short of HIPAA/FedRAMP attestation—you still own formal risk assessments.
 
-- **表格选择**：
-    - 展示解析后的表格列表，允许用户选择需要上传的表格。
-    - 监听表格选择事件，将选中的表格数据传递给父组件。
+## Demo fixtures for UI testing
 
-- **事件传递**：
-    - 通过事件将解析后的表格数据传递给父组件，以便进行后续的处理和展示。
+Synthetic but detailed files live in `fixtures/`:
 
-#### TargetTableUpload.vue
+- `fixtures/std_patient_clinical_hub.json` — **standard target catalog** (single table, 52 fields, English identifiers + descriptions). Copied beside the XLSX under `public/fixtures/` when you run the generator. Import manually if you prefer — **during `npm run serve` the UI also auto-loads both files on startup** (`MappingTool.vue`).
+- `fixtures/demo_hospital_ehr_messy_multi_sheet.xlsx` — **hospital-style source** workbook (two sheets). The generator also copies artifacts into **`public/fixtures/`** so the dev SPA can preload them without manual uploads. Regenerate anytime with `python fixtures/build_hospital_ehr_demo_xlsx.py` from the repo root (needs `openpyxl`; backend `requirements.txt` includes it).
 
-**功能描述**：
+**Run the stack for manual testing:** Terminal A — `cd backend`, activate venv, `python app.py`. Terminal B — `npm run serve`, open the printed local URL; the dev server proxies `/api` to `http://127.0.0.1:5000`.
 
-- 实现目标数据表文件的上传和解析功能。
+## Testing checklist
 
-**详细实现**：
+- Upload representative Excel + JSON fixtures and confirm tables render.
+- Exercise drag-and-drop mapping lines (D3 overlay) while scrolling both panes.
+- Run each AI endpoint once with a valid API key and verify JSON/SQL output quality.
+- Toggle `VUE_APP_API_ORIGIN` to simulate split hosting.
 
-- **文件选择**：
-    - 提供文件选择按钮，允许用户选择 JSON 格式的目标数据表文件。
-    - 监听文件选择事件，获取用户选择的文件。
+## Operational notes
 
-- **文件解析**：
-    - 使用 FileReader 解析上传的文件，提取表格数据。
-    - 处理 JSON 文件的解析，提取表格的字段数据。
+- AI output is **assistive** — review every mapping and SQL statement before production loads.
+- Temporary uploads land in `backend/uploads/`, which is git-ignored. Clear it periodically on shared machines.
+- The legacy `workflow*.py` scripts were removed in favor of importable functions inside `ai_pipeline.py`.
 
-- **文件存储**：
-    - 将解析后的文件存储在本地状态中，支持选择已上传的文件进行解析。
-    - 提供文件列表展示，允许用户选择和重新解析已上传的文件。
+## Credits
 
-- **表格选择**：
-    - 展示解析后的表格列表，允许用户选择需要上传的表格。
-    - 监听表格选择事件，将选中的表格数据传递给父组件。
-
-- **事件传递**：
-    - 通过事件将解析后的表格数据传递给父组件，以便进行后续的处理和展示。
-
-#### TableComponent.vue
-
-**功能描述**：
-
-- 展示单个表格及其字段，支持字段拖拽操作。
-
-**详细实现**：
-
-- **字段展示**：
-    - 展示表格的字段列表，支持搜索和过滤字段。
-    - 使用 `v-for` 指令循环展示字段，并根据搜索关键词进行过滤。
-
-- **字段拖拽**：
-    - 实现字段拖拽功能，允许用户将字段从源表拖拽到目标表，建立映射关系。
-    - 监听字段的 `dragstart` 和 `drop` 事件，处理字段拖拽和放置逻辑。
-
-- **拖拽事件**：
-    - 监听字段拖拽和放置事件，通过事件传递将拖拽操作传递给父组件。
-    - 实现字段拖拽时的视觉效果和高亮显示。
-
-- **字段双击**：
-    - 实现字段的双击事件，允许用户快速选择和高亮字段。
-    - 监听字段的 `dblclick` 事件，触发字段高亮显示。
-
-- **字段映射高亮**：
-    - 根据映射关系高亮已映射的字段，提供直观的映射关系展示。
-    - 使用计算属性判断字段是否已映射，并设置对应的高亮样式。
-
-### API 接口文档
-
-#### 推荐源表 API
-
-- **URL**：`/api/recommend`
-- **方法**：POST
-- **参数**：
-    - `source_file`：源表文件（Excel 格式）
-    - `target_file`：目标表文件（JSON 格式）
-- **返回值**：相关源表的 JSON 列表
-
-#### 推荐字段映射 API
-
-- **URL**：`/api/recommend_fields`
-- **方法**：POST
-- **参数**：
-    - `source_file`：源表文件（JSON 格式）
-    - `target_file`：目标表文件（JSON 格式）
-- **返回值**：字段映射关系的 JSON 列表
-
-#### 生成 SQL API
-
-- **URL**：`/api/generate_sql`
-- **方法**：POST
-- **参数**：
-    - `field_mappings`：字段映射关系的 JSON 数据
-- **返回值**：生成的 SQL 语句
-
-### 测试文档
-
-#### 测试环境配置
-
-- **前端**：确保安装了 Vue.js 开发环境。
-- **后端**：确保安装了 Flask 和相关 Python 包。
-
-#### 测试用例
-
-- 上传源表和目标表，检查文件解析和数据展示是否正确。
-- 测试字段拖拽映射功能，检查映射关系是否正确保存。
-- 测试推荐字段映射功能，检查返回的映射关系是否合理。
-- 测试生成 SQL 功能，检查生成的 SQL 语句是否正确。
-
-### 常见问题与解答（FAQ）
-
-1. **源表或标准表文件上传失败**：
-    - 确认文件格式是否为 Excel 或 JSON(SourceTable目前只能传Excel)。
-    - 检查文件内容是否符合预期格式(每个字段为一列)。
-
-2. **字段映射不准确**：
-    - 检查源表和目标表的字段名和注释是否清晰明确。
-    - 重复使用推荐字段映射功能进行调整或人工调整。
-
-3. **删除(Remove)功能区分**：
-    - 在删除导入的具体源表时不会删除映射关系表中已添加的任何映射。
-    - 在删除导入的标准表时会删除已添加的所有与该标准表相关的映射。
-    - 为防止误删，单个映射删除只能在映射关系表action列中实现。
-
-#### 项目缺陷(仍需修改部分)
-
-- 常见故障及需要优化的部分：
-
-**提示词可继续优化**：
-    - 可以修改提示词来达到更好地映射准确度
-    - 使用推荐字段映射功能进行调整。
-
-
-### 总结
-
-这份文档详细介绍了数据库映射工具项目的功能和实现细节，包括前端组件的功能、后端 API
-的设计、测试用例和常见问题的解决方法。希望这份文档能够帮助开发者更好地理解和使用这个项目。
-
- * Author: Andy Sun
- * Last Edit Date: 2024-07-02
+Original concept and Chinese documentation by Andy Sun (July 2024). This fork modernizes the stack, localizes documentation, and hardens the integration layer.

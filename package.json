@@ -1,7 +1,8 @@
 {
   "name": "database-mapping",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "description": "Interactive database mapping workbench powered by Vue 3 + Flask + OpenAI",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

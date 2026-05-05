@@ -42,6 +42,9 @@
 <script>
 import * as XLSX from 'xlsx';
 
+import { postForm } from '@/api/client';
+import { tablesFromWorkbook } from '@/utils/workbookTables';
+
 export default {
   props: ['targetTable'],
   data() {
@@ -94,17 +97,8 @@ export default {
           } else {
             throw new Error('Unsupported file format');
           }
-          const newTables = workbook.SheetNames.map((name) => {
-            const worksheet = workbook.Sheets[name];
-            const headers = XLSX.utils.sheet_to_json(worksheet, {header: 1})[0];
-            const comments = XLSX.utils.sheet_to_json(worksheet, {header: 1})[1];
-            const fields = headers.map((header, index) => ({
-              name: header,
-              comment: comments ? comments[index] : ''
-            }));
-            return {name, fields, file};
-          });
-          this.tables = newTables;
+          const base = tablesFromWorkbook(workbook);
+          this.tables = base.map(row => ({ ...row, file }));
           this.errorMessage = '';
         } catch (error) {
           this.errorMessage = `Error parsing file: ${error.message}`;
@@ -112,13 +106,46 @@ export default {
       };
       reader.readAsBinaryString(file);
     },
+    /**
+     * Programmatic ingestion (demo bootstrap) — resolves after FileReader finishes.
+     */
+    bootstrapFromFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          try {
+            const data = e.target.result;
+            let workbook;
+            if (file.name.endsWith('.xlsx')) {
+              workbook = XLSX.read(data, { type: 'binary' });
+            } else if (file.name.endsWith('.json')) {
+              workbook = { SheetNames: ['Sheet1'], Sheets: { Sheet1: JSON.parse(data) } };
+            } else {
+              throw new Error('Unsupported file format');
+            }
+            const base = tablesFromWorkbook(workbook);
+            this.tables = base.map(row => ({ ...row, file }));
+            this.selectedFileName = file.name;
+            this.selectedFile = file;
+            this.storeFile(file);
+            this.errorMessage = '';
+            resolve(this.tables);
+          } catch (error) {
+            this.errorMessage = `Error parsing file: ${error.message}`;
+            reject(error);
+          }
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsBinaryString(file);
+      });
+    },
     removeFile(index) {
       this.storedFiles.splice(index, 1);
       if (this.storedFiles.length === 0) {
         this.selectedFileName = '';
         this.selectedFile = null;
         this.tables = [];
-        this.$refs.fileInput.value = ''; // 重置文件输入框的值
+        this.$refs.fileInput.value = '';
       }
     },
     selectTable(index) {
@@ -156,18 +183,10 @@ export default {
         formData.append('source_file', this.selectedFile);
         formData.append('target_file', new Blob([JSON.stringify(this.targetTable)], {type: 'application/json'}));
 
-        const response = await fetch('http://localhost:5000/api/recommend', {
-          method: 'POST',
-          body: formData
-        });
+        const data = await postForm('/api/recommend', formData);
 
-        const data = await response.json();
-        if (data.error) {
-          this.message = data.error;
-        } else {
-          this.importRecommendedTables(data);
-          this.message = 'Source tables recommended successfully!';
-        }
+        this.importRecommendedTables(data);
+        this.message = 'AI recommendations applied to source tables!';
       } catch (error) {
         this.message = `API request failed: ${error.message}`;
       } finally {

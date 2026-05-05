@@ -1,0 +1,103 @@
+name: Compliance CI
+
+
+
+on:
+
+  push:
+
+    branches: [master, main]
+
+  pull_request:
+
+    branches: [master, main]
+
+
+
+jobs:
+
+  backend:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+
+      run:
+
+        working-directory: backend
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Configure Python runtime
+
+        uses: actions/setup-python@v5
+
+        with:
+
+          python-version: '3.12'
+
+          cache: pip
+
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - name: Sync Python dependencies
+
+        run: |
+
+          python -m pip install --upgrade pip
+
+          python -m pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Pip dependency advisory (pip-audit)
+
+        continue-on-error: true
+
+        run: |
+
+          python -m pip install pip-audit
+
+          pip-audit -r requirements.txt
+
+      - name: Pytest safeguards
+
+        run: python -m pytest tests -q
+
+
+
+  frontend:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js toolchain
+
+        uses: actions/setup-node@v4
+
+        with:
+
+          node-version: '20'
+
+          cache: npm
+
+          cache-dependency-path: package-lock.json
+
+      - name: Install + lint + build + npm advisory
+
+        run: |
+
+          npm ci
+
+          npm run lint
+
+          npm run build
+
+          npm audit --audit-level=high || true
+
+

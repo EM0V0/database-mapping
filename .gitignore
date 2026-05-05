@@ -1,9 +1,14 @@
 .DS_Store
 node_modules
 /dist
-
+myenv/
+backend/uploads/
+backend/__pycache__/
+**/__pycache__/
+backend/.pytest_cache/
 
 # local env files
+backend/.env
 .env.local
 .env.*.local
 

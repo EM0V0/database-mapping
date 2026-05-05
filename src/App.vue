@@ -2,7 +2,7 @@
   <div id="app">
     <MappingTool />
     <footer>
-      <p>Author: szc</p>
+      <small>Upstream concept by Andy Sun — modernized fork</small>
     </footer>
   </div>
 </template>

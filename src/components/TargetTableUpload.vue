@@ -67,7 +67,7 @@ export default {
         this.selectedTableName = '';
         this.selectedTable = null;
         this.tables = [];
-        this.$refs.fileInput.value = ''; // 重置文件输入框的值
+        this.$refs.fileInput.value = '';
       }
     },
     storeFile(file) {
@@ -123,7 +123,28 @@ export default {
     },
     toggleTableList() {
       this.tableListVisible = !this.tableListVisible;
-    }
+    },
+
+    /**
+     * Load a bundled JSON catalog into the canvas / parent state (auto-demo path).
+     */
+    bootstrapFromCatalog(tables) {
+      if (!Array.isArray(tables) || tables.length === 0) {
+        return;
+      }
+      const first = tables[0];
+      this.tables = tables;
+      this.selectedTable = first;
+      this.selectedTableName = first.name;
+      this.$emit('targetTableSelected', first);
+      this.$emit('tableAdded', {
+        name: first.name,
+        fields: first.fields,
+        update: !!(this.$parent && this.$parent.imported),
+      });
+      this.fileListVisible = false;
+      this.tableListVisible = false;
+    },
   }
 };
 </script>
